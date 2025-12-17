@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mandadi Varun - Student Portfolio</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .header {
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .tagline {
+            font-size: 1.3rem;
+            opacity: 0.9;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        section {
+            padding: 4rem 0;
+        }
+
+        h2 {
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            color: #2c3e50;
+        }
+
+        .about {
+            background: #f8f9fa;
+        }
+
+        .about p {
+            font-size: 1.1rem;
+            max-width: 700px;
+            margin: 0 auto;
+            text-align: center;
+            color: #555;
+        }
+
+        .skills {
+            background: white;
+        }
+
+        .skills-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .skill-item {
+            background: #ecf0f1;
+            padding: 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .skill-item h3 {
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+
+        .projects {
+            background: #f8f9fa;
+        }
+
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .project-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .project-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .project-card h3 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+        }
+
+        .footer {
+            background: #34495e;
+            color: white;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .footer a {
+            color: #3498db;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .container {
+                padding: 0 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <h1>Mandadi Varun</h1>
+            <p class="tagline">B-TECH CSE(CORE) Student | VIT-AP University</p>
+        </div>
+    </header>
+
+    <section class="about">
+        <div class="container">
+            <h2>About Me</h2>
+            <p>
+                B-TECH CSE(CORE) student at VIT-AP University passionate about software 
+                development and web technologies. Proficient in Java, Python, C, C++, R, and SQL. 
+                Currently learning HTML,CSS and web developing languages to expand into full-stack development. 
+                Strong problem-solving skills with hands-on project experience.
+            </p>
+        </div>
+    </section>
+
+    <section class="skills">
+        <div class="container">
+            <h2>Skills</h2>
+            <div class="skills-list">
+                <div class="skill-item">
+                    <h3>Java</h3>
+                    <p>Object-oriented programming</p>
+                </div>
+                <div class="skill-item">
+                    <h3>Python</h3>
+                    <p>Data structures & algorithms</p>
+                </div>
+                <div class="skill-item">
+                    <h3>C / C++</h3>
+                    <p>Systems programming</p>
+                </div>
+                <div class="skill-item">
+                    <h3>SQL</h3>
+                    <p>Database management & queries</p>
+                </div>
+                <div class="skill-item">
+                    <h3>R</h3>
+                    <p>Data analysis</p>
+                </div>
+                <div class="skill-item">
+                    <h3>HTML & CSS</h3>
+                    <p>Currently learning</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="projects">
+        <div class="container">
+            <h2>Projects</h2>
+            <div class="projects-grid">
+                <div class="project-card">
+                    <h3>Full Stack Development Project</h3>
+                    <p>Developed a complete web application using modern full-stack 
+                       technologies with frontend, backend, and database integration.</p>
+                </div>
+                <div class="project-card">
+                    <h3>Python Data Analysis Tool</h3>
+                    <p>Created data processing application using Python, R, and SQL for 
+                       statistical analysis and visualization.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 Mandadi Varun. VIT-AP University Student.</p>
+            <p>Contact: <a href="mailto:varunmandadi21@gmail.com">varunmandadi21@gmail.com</a></p>
+        </div>
+    </footer>
+</body>
+</html>
