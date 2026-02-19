@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Weather Information Dashboard</title>
+<style>
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: linear-gradient(135deg, #4cb8c4, #3cd3ad);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+    .card {
+        background: white;
+        padding: 30px;
+        border-radius: 15px;
+        width: 400px;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+        text-align: center;
+    }
+    h2 {
+        margin-bottom: 15px;
+        color: #333;
+    }
+    input {
+        width: 90%;
+        padding: 10px;
+        border-radius: 8px;
+        border: 2px solid #aaa;
+        margin-bottom: 10px;
+        font-size: 16px;
+    }
+    button {
+        padding: 10px 15px;
+        border: none;
+        background: #007bff;
+        color: white;
+        border-radius: 8px;
+        font-size: 15px;
+        cursor: pointer;
+    }
+    button:hover {
+        background: #0056b3;
+    }
+    .loader {
+        display: none;
+        margin-top: 10px;
+    }
+    .loader div {
+        width: 18px;
+        height: 18px;
+        border: 3px solid #ddd;
+        border-top: 3px solid #007bff;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: auto;
+    }
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+    .weather-info {
+        margin-top: 15px;
+        font-size: 16px;
+        font-weight: bold;
+    }
+    .error {
+        color: red;
+    }
+</style>
+</head>
+<body>
+<div class="card">
+    <h2>Enter your city</h2>
+    <input type="text" id="cityInput" placeholder="Enter city name">
+    <button onclick="getWeather()">Get Weather</button>
+    <div class="loader" id="loader">
+        <div></div>
+    </div>
+    <div class="weather-info" id="weatherInfo"></div>
+</div>
+<script>
+let lastWeatherResult = null;
+async function getWeather() {
+    const city = document.getElementById("cityInput").value.trim();
+    const infoDiv = document.getElementById("weatherInfo");
+    const loader = document.getElementById("loader");
+    if (city === "") {
+        infoDiv.innerHTML = "<span class='error'>City name cannot be empty</span>";
+        return;
+    }
+    loader.style.display = "block";
+    infoDiv.innerHTML = "";
+    try {
+        const apiKey = "b103d1af67940c019c44390716289474"; 
+        const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${apiKey}`;
+        const response = await fetch(url);
+        if (!response.ok) {
+            if (response.status === 404) {
+                throw new Error("City not found (404)");
+            } else {
+                throw new Error("Failed to fetch weather data (" + response.status + ")");
+            }
+        }
+        const data = await response.json();
+        lastWeatherResult = data;
+        const temp = data.main.temp;
+        const humidity = data.main.humidity;
+        const condition = data.weather[0].main;
+        infoDiv.innerHTML = `
+           🌆 <strong>${data.name}</strong><br>
+           🌡 Temperature: ${temp} °C<br>
+           💧 Humidity: ${humidity}%<br>
+           ☁ Condition: ${condition}
+        `;
+    } catch (error) {
+        infoDiv.innerHTML = `<span class='error'>${error.message}</span>`;
+    } finally {
+        loader.style.display = "none";
+    }
+}
+</script>
+</body>
+</html>
