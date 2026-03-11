@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Live Product Search</title>
+<style>
+    body {
+        margin: 0;
+        font-family: 'Segoe UI', sans-serif;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+    .container {
+        background: white;
+        width: 600px;
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+        text-align: center;
+    }
+    h2 {
+        margin-bottom: 20px;
+        color: #333;
+    }
+    input {
+        width: 100%;
+        padding: 12px;
+        border-radius: 8px;
+        border: 2px solid #ddd;
+        font-size: 14px;
+        transition: 0.3s;
+        outline: none;
+    }
+    input:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 8px rgba(102,126,234,0.4);
+    }
+    .results {
+        margin-top: 20px;
+        max-height: 300px;
+        overflow-y: auto;
+        text-align: left;
+    }
+    .product-card {
+        padding: 12px;
+        border-radius: 8px;
+        background: #f8f9fc;
+        margin-bottom: 10px;
+        transition: 0.3s;
+    }
+    .product-card:hover {
+        background: #e2e6ff;
+        transform: scale(1.02);
+    }
+    .price {
+        color: #28a745;
+        font-weight: bold;
+    }
+    .category {
+        font-size: 12px;
+        color: #555;
+    }
+    .message {
+        margin-top: 15px;
+        font-weight: 500;
+        color: red;
+    }
+    .loader {
+        display: none;
+        margin-top: 10px;
+    }
+    .loader div {
+        width: 18px;
+        height: 18px;
+        border: 3px solid #ddd;
+        border-top: 3px solid #667eea;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: auto;
+    }
+    @keyframes spin {
+        100% { transform: rotate(360deg); }
+    }
+</style>
+</head>
+<body>
+<div class="container">
+    <h2>🔎 Live Product Search</h2>
+    <input 
+        type="text" 
+        id="searchInput" 
+        placeholder="Search products by name or category..."
+        autocomplete="off"
+    >
+    <div class="loader" id="loader">
+        <div></div>
+    </div>
+    <div class="results" id="results"></div>
+    <div class="message" id="message"></div>
+</div>
+<script>
+const searchInput = document.getElementById("searchInput");
+const resultsDiv = document.getElementById("results");
+const message = document.getElementById("message");
+const loader = document.getElementById("loader");
+function debounce(func, delay) {
+    let timeout;
+    return function () {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func(), delay);
+    };
+}
+async function searchProducts() {
+    const query = searchInput.value.trim().toLowerCase();
+    resultsDiv.innerHTML = "";
+    message.textContent = "";
+    if (query === "") {
+        return;
+    }
+    loader.style.display = "block";
+    try {
+        const response = await fetch("products.json");
+        if (!response.ok) {
+            throw new Error("Network response was not ok");
+        }
+        const data = await response.json();
+        await new Promise(resolve => setTimeout(resolve, 600));
+        const filtered = data.products.filter(product =>
+            product.name.toLowerCase().includes(query) ||
+            product.category.toLowerCase().includes(query)
+        );
+        if (filtered.length === 0) {
+            message.textContent = "No results found ❌";
+        } else {
+            filtered.forEach(product => {
+                const card = document.createElement("div");
+                card.className = "product-card";
+                card.innerHTML = `
+                    <strong>${product.name}</strong><br>
+                    <span class="price">₹${product.price}</span><br>
+                    <span class="category">${product.category}</span>
+                `;
+                resultsDiv.appendChild(card);
+            });
+        }
+    } catch (error) {
+        message.textContent = "Failed to fetch products. Please try again.";
+        console.error(error);
+    }
+    loader.style.display = "none";
+}
+searchInput.addEventListener("input", debounce(searchProducts, 500));
+</script>
+</body>
+</html>

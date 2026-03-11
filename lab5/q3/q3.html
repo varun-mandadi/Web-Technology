@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Student Record System</title>
+<style>
+body{
+    margin:0;
+    font-family:Arial, sans-serif;
+    background:linear-gradient(135deg,#74ebd5,#ACB6E5);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+}
+.container{
+    width:90%;
+    max-width:900px;
+    background:#fff;
+    padding:25px;
+    border-radius:15px;
+    box-shadow:0 12px 30px rgba(0,0,0,0.2);
+}
+h2{
+    text-align:center;
+    margin-bottom:20px;
+}
+input,button{
+    padding:8px;
+    margin:5px;
+    border-radius:6px;
+    border:1px solid #ccc;
+}
+button{
+    background:#2196F3;
+    color:white;
+    cursor:pointer;
+}
+button:hover{
+    background:#1976d2;
+}
+table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:15px;
+}
+th,td{
+    padding:10px;
+    border:1px solid #ccc;
+    text-align:center;
+}
+th{
+    background:#1976d2;
+    color:white;
+}
+.message{
+    text-align:center;
+    margin-top:10px;
+    font-weight:bold;
+}
+.success{ color:green; }
+.error{ color:red; }
+</style>
+</head>
+<body>
+<div class="container">
+<h2>🎓 Student Record System</h2>
+<input type="text" id="id" placeholder="Student ID">
+<input type="text" id="name" placeholder="Name">
+<input type="text" id="course" placeholder="Course">
+<input type="number" id="marks" placeholder="Marks">
+<br>
+<button onclick="addStudent()">Add</button>
+<button onclick="updateStudent()">Update</button>
+<button onclick="deleteStudent()">Delete</button>
+<div class="message" id="msg"></div>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Name</th>
+<th>Course</th>
+<th>Marks</th>
+</tr>
+</thead>
+<tbody id="studentTable"></tbody>
+</table>
+</div>
+<script>
+let students = [];
+async function loadStudents(){
+    try{
+        const response = await fetch("students.json");
+        if(!response.ok){
+            throw new Error("Failed to load JSON file");
+        }
+        students = await response.json();
+        displayStudents();
+    }
+    catch(error){
+        showMsg("JSON Error: " + error.message, "error");
+    }
+}
+function displayStudents(){
+    const table = document.getElementById("studentTable");
+    table.innerHTML="";
+    if(students.length===0){
+        showMsg("No students found","error");
+        return;
+    }
+    students.forEach(student=>{
+        table.innerHTML += `
+        <tr>
+            <td>${student.id}</td>
+            <td>${student.name}</td>
+            <td>${student.course}</td>
+            <td>${student.marks}</td>
+        </tr>`;
+    });
+}
+function addStudent(){
+    const id = document.getElementById("id").value.trim();
+    const name = document.getElementById("name").value.trim();
+    const course = document.getElementById("course").value.trim();
+    const marks = document.getElementById("marks").value.trim();
+    if(!id || !name || !course || !marks){
+        showMsg("All fields are required","error");
+        return;
+    }
+    const exists = students.find(s=>s.id===id);
+    if(exists){
+        showMsg("Student ID already exists","error");
+        return;
+    }
+    students.push({id,name,course,marks:Number(marks)});
+    displayStudents();
+    showMsg("Student added successfully","success");
+}
+function updateStudent(){
+    const id = document.getElementById("id").value.trim();
+    const course = document.getElementById("course").value.trim();
+    const marks = document.getElementById("marks").value.trim();
+    const student = students.find(s=>s.id===id);
+    if(!student){
+        showMsg("Student not found","error");
+        return;
+    }
+    if(course) student.course = course;
+    if(marks) student.marks = Number(marks);
+    displayStudents();
+    showMsg("Student updated successfully","success");
+}
+function deleteStudent(){
+    const id = document.getElementById("id").value.trim();
+    const index = students.findIndex(s=>s.id===id);
+    if(index===-1){
+        showMsg("Student not found","error");
+        return;
+    }
+    students.splice(index,1);
+    displayStudents();
+    showMsg("Student deleted successfully","success");
+}
+function showMsg(text,type){
+    const msg = document.getElementById("msg");
+    msg.className="message "+type;
+    msg.textContent=text;
+}
+loadStudents();
+</script>
+</body>
+</html>

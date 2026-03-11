@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Adaptive Registration Form</title>
+<style>
+*{
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+}
+body{
+    height: 100vh;
+    margin: 0;
+    background: linear-gradient(135deg,#e06464,#764ba2);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.container{
+    width: 430px;
+    padding: 0;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 18px 40px rgba(0,0,0,0.35);
+}
+.header{
+    background: linear-gradient(135deg,#43cea2,#189d82);
+    padding: 18px;
+    text-align: center;
+}
+.header h2{
+    margin: 0;
+    color: white;
+}
+.form-body{
+    background: #fdfdfd;
+    padding: 28px;
+}
+.field{
+    position: relative;
+    margin-bottom: 22px;
+}
+.field input,
+.field select{
+    width: 100%;
+    padding: 12px 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    background: #f7f7f7;
+    outline: none;
+    transition: 0.3s;
+}
+.field label{
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #fdfdfd;
+    padding: 0 6px;
+    color: #777;
+    font-size: 14px;
+    pointer-events: none;
+    transition: 0.3s;
+}
+.field input:focus + label,
+.field input:not(:placeholder-shown) + label,
+.field select:focus + label,
+.field select:not([value=""]) + label{
+    top: -9px;
+    font-size: 12px;
+    color: #bc5959;
+}
+.field input:focus,
+.field select:focus{
+    border-color: #c05a5a;
+    background: #ffffff;
+}
+.invalid{
+    border: 2px solid #e53935 !important;
+}
+.valid{
+    border: 2px solid #43a047 !important;
+}
+button{
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 6px;
+    background: linear-gradient(135deg,#43cea2,#185a9d);
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+button:hover{
+    opacity: 0.9;
+}
+#skillsBox{
+    display: none;
+}
+#message{
+    text-align: center;
+    margin-top: 15px;
+    font-weight: bold;
+}
+</style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h2>User Registration</h2>
+    </div>
+    <div class="form-body">
+        <form id="registerForm">
+            <div class="field">
+                <input type="text" id="name" placeholder=" ">
+                <label>Enter Name</label>
+            </div>
+            <div class="field">
+                <input type="email" id="email" placeholder=" ">
+                <label>Enter Email</label>
+            </div>
+            <div class="field">
+                <input type="password" id="password" placeholder=" ">
+                <label>Enter Password</label>
+            </div>
+            <div class="field">
+                <input type="password" id="confirmPassword" placeholder=" ">
+                <label>Confirm Password</label>
+            </div>
+            <div class="field">
+                <input type="number" id="age" placeholder=" ">
+                <label>Enter Age</label>
+            </div>
+            <div class="field">
+                <select id="role">
+                    <option value="" selected disabled></option>
+                    <option value="student">Student</option>
+                    <option value="teacher">Teacher</option>
+                    <option value="admin">Admin</option>
+                </select>
+                <label>Select Role</label>
+            </div>
+            <div id="skillsBox">
+                <div class="field">
+                    <input type="text" id="skills" placeholder=" ">
+                    <label>Enter Skills</label>
+                </div>
+            </div>
+            <button type="submit">Register</button>
+        </form>
+        <p id="message"></p>
+    </div>
+</div>
+<script>
+const form = document.getElementById("registerForm");
+const role = document.getElementById("role");
+const skillsBox = document.getElementById("skillsBox");
+const message = document.getElementById("message");
+role.addEventListener("change", () => {
+    skillsBox.style.display =
+        (role.value === "student" || role.value === "teacher") ? "block" : "none";
+});
+function validateEmail(email, role){
+    if(role === "admin"){
+        return email.endsWith("@admin.com");
+    }
+    return email.includes("@");
+}
+function validatePassword(password, role){
+    if(role === "admin"){
+        return /(?=.*[A-Z])(?=.*[0-9])(?=.*[@#$]).{8,}/.test(password);
+    }
+    if(role === "teacher"){
+        return password.length >= 6;
+    }
+    return password.length >= 4;
+}
+function markField(field, valid){
+    field.classList.remove("valid","invalid");
+    field.classList.add(valid ? "valid" : "invalid");
+}
+form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    let validForm = true;
+    const name = document.getElementById("name");
+    const email = document.getElementById("email");
+    const password = document.getElementById("password");
+    const confirmPassword = document.getElementById("confirmPassword");
+    const age = document.getElementById("age");
+    const skills = document.getElementById("skills");
+    markField(name, name.value !== "");
+    validForm &= name.value !== "";
+    let emailValid = validateEmail(email.value, role.value);
+    markField(email, emailValid);
+    validForm &= emailValid;
+    let passValid = validatePassword(password.value, role.value);
+    markField(password, passValid);
+    validForm &= passValid;
+    let confirmValid = password.value === confirmPassword.value && confirmPassword.value !== "";
+    markField(confirmPassword, confirmValid);
+    validForm &= confirmValid;
+    let minAge = role.value === "admin" ? 25 :
+                 role.value === "teacher" ? 21 : 16;
+    let ageValid = age.value >= minAge;
+    markField(age, ageValid);
+    validForm &= ageValid;
+    if(skillsBox.style.display === "block"){
+        markField(skills, skills.value !== "");
+        validForm &= skills.value !== "";
+    }
+    if(validForm){
+        message.style.color = "green";
+        message.textContent = "Registration Successful!";
+    }else{
+        message.style.color = "red";
+        message.textContent = "Please fix highlighted fields.";
+    }
+});
+</script>
+</body>
+</html>
