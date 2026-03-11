@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Student Management System</title>
+<style>
+    body {
+        margin: 0;
+        font-family: 'Segoe UI', sans-serif;
+        background: linear-gradient(135deg, #36d1dc, #5b86e5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+    }
+    .container {
+        background: white;
+        width: 900px;
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+    }
+    h2 {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    form {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+    input {
+        padding: 8px;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+        outline: none;
+    }
+    input:focus {
+        border-color: #5b86e5;
+        box-shadow: 0 0 5px rgba(91,134,229,0.5);
+    }
+    button {
+        padding: 8px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: 0.3s;
+    }
+    .add-btn { background: #28a745; color: white; }
+    .add-btn:hover { background: #218838; }
+    .update-btn { background: #ffc107; }
+    .delete-btn { background: #dc3545; color: white; }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+    }
+    th, td {
+        padding: 10px;
+        text-align: center;
+        border-bottom: 1px solid #ddd;
+    }
+    th {
+        background: #5b86e5;
+        color: white;
+    }
+    tr:hover {
+        background: #f2f2f2;
+    }
+    .message {
+        margin-top: 15px;
+        text-align: center;
+        font-weight: bold;
+    }
+    .success { color: green; }
+    .error { color: red; }
+</style>
+</head>
+<body>
+<div class="container">
+    <h2>📘 Student Management System</h2>
+    <form id="studentForm">
+        <input type="text" id="id" placeholder="Student ID">
+        <input type="text" id="name" placeholder="Name">
+        <input type="text" id="department" placeholder="Department">
+        <input type="number" id="marks" placeholder="Marks">
+        <button type="submit" class="add-btn">Add Student</button>
+    </form>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Department</th>
+                <th>Marks</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="studentTable"></tbody>
+    </table>
+    <div class="message" id="message"></div>
+</div>
+<script>
+let students = [];
+const tableBody = document.getElementById("studentTable");
+const messageDiv = document.getElementById("message");
+const form = document.getElementById("studentForm");
+async function fetchStudents() {
+    try {
+        const response = await fetch("students.json");
+        if (!response.ok) throw { status: response.status };
+        const data = await response.json();
+        students = data.students;
+        renderTable();
+        showMessage("Students loaded successfully (200)", "success");
+    } catch (error) {
+        showMessage("Error loading students (500)", "error");
+    }
+}
+function renderTable() {
+    tableBody.innerHTML = "";
+    students.forEach(student => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+            <td>${student.id}</td>
+            <td>${student.name}</td>
+            <td>${student.department}</td>
+            <td>${student.marks}</td>
+            <td>
+                <button class="update-btn" onclick="editStudent('${student.id}')">Edit</button>
+                <button class="delete-btn" onclick="deleteStudent('${student.id}')">Delete</button>
+            </td>
+        `;
+        tableBody.appendChild(row);
+    });
+}
+form.addEventListener("submit", function(e) {
+    e.preventDefault();
+    const id = document.getElementById("id").value.trim();
+    const name = document.getElementById("name").value.trim();
+    const department = document.getElementById("department").value.trim();
+    const marks = document.getElementById("marks").value.trim();
+    if (!id || !name || !department || !marks) {
+        showMessage("All fields are required (400)", "error");
+        return;
+    }
+    if (students.find(s => s.id === id)) {
+        showMessage("Student ID already exists (409)", "error");
+        return;
+    }
+    students.push({ id, name, department, marks });
+    renderTable();
+    showMessage("Student added successfully (200)", "success");
+    form.reset();
+});
+function editStudent(id) {
+    const student = students.find(s => s.id === id);
+    if (!student) {
+        showMessage("Student not found (404)", "error");
+        return;
+    }
+    document.getElementById("id").value = student.id;
+    document.getElementById("name").value = student.name;
+    document.getElementById("department").value = student.department;
+    document.getElementById("marks").value = student.marks;
+    deleteStudent(id);
+    showMessage("Modify details and click Add to update (200)", "success");
+}
+function deleteStudent(id) {
+    const index = students.findIndex(s => s.id === id);
+    if (index === -1) {
+        showMessage("Student not found (404)", "error");
+        return;
+    }
+    students.splice(index, 1);
+    renderTable();
+    showMessage("Student deleted successfully (200)", "success");
+}
+function showMessage(msg, type) {
+    messageDiv.textContent = msg;
+    messageDiv.className = "message " + type;
+}
+fetchStudents();
+</script>
+</body>
+</html>

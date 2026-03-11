@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Exercise 4</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #dbe9ff;
+            padding: 20px;
+        }
+        h2 {
+            text-align: center;
+            color: #1a237e;
+        }
+        .container {
+            max-width: 650px;
+            margin: auto;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.15);
+        }
+        label {
+            font-weight: bold;
+            display: block;
+            margin-top: 10px;
+        }
+        .mandatory {
+            color: red;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+        }
+        .password-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .password-row input {
+            flex: 1;
+        }
+        button {
+            margin-top: 15px;
+            padding: 8px 12px;
+            cursor: pointer;
+            background-color: #7e4f1a;
+            color: white;
+            border: none;
+            border-radius: 4px;
+        }
+        .view-btn {
+            margin-top: 5px;
+            padding: 7px 10px;
+            background-color: #ab3939;
+        }
+        .clear-btn {
+            background-color: #b71c1c;
+            width: 100%;
+        }
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+            background-color: #f9f9f9;
+        }
+        th {
+            background-color: #1a7e2c;
+            color: white;
+        }
+        th, td {
+            border: 1px solid #999;
+            padding: 8px;
+            text-align: center;
+        }
+        .delete-btn {
+            background-color: red;
+            color: white;
+            border: none;
+            padding: 5px 8px;
+            cursor: pointer;
+        }
+        .error {
+            color: red;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+<h2>User Registration & Management System</h2>
+<div class="container">
+    <form onsubmit="registerUser(event)">
+        <label>Name <span class="mandatory">*</span></label>
+        <input type="text" id="name" placeholder="Enter name">
+        <label>Email <span class="mandatory">*</span></label>
+        <input type="email" id="email" placeholder="Enter email">
+        <label>Mobile Number <span class="mandatory">*</span></label>
+        <input type="text" id="mobile" placeholder="Enter 10-digit mobile number">
+        <label>Password <span class="mandatory">*</span></label>
+        <div class="password-row">
+            <input type="password" id="password" placeholder="Enter password (min 6 characters)">
+            <button type="button" class="view-btn" onclick="togglePassword()">Show</button>
+        </div>
+        <button type="submit">Register</button>
+        <p class="error" id="errorMsg"></p>
+    </form>
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Mobile</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id="userTable"></tbody>
+    </table>
+    <button class="clear-btn" onclick="clearAllUsers()">Clear All Users</button>
+</div>
+<script>
+    function getUsers() {
+        return JSON.parse(localStorage.getItem("users")) || [];
+    }
+    function saveUsers(users) {
+        localStorage.setItem("users", JSON.stringify(users));
+    }
+    function togglePassword() {
+        const pwd = document.getElementById("password");
+        pwd.type = pwd.type === "password" ? "text" : "password";
+    }
+    function registerUser(event) {
+        event.preventDefault();
+        const name = document.getElementById("name").value.trim();
+        const email = document.getElementById("email").value.trim();
+        const mobile = document.getElementById("mobile").value.trim();
+        const password = document.getElementById("password").value.trim();
+        const errorMsg = document.getElementById("errorMsg");
+        if (!name || !email || !mobile || !password) {
+            errorMsg.innerText = "All fields marked * are mandatory";
+            return;
+        }
+        if (!/^\d{10}$/.test(mobile)) {
+            errorMsg.innerText = "Mobile number must be 10 digits";
+            return;
+        }
+        if (password.length < 6) {
+            errorMsg.innerText = "Password must be at least 6 characters";
+            return;
+        }
+        let users = getUsers();
+        if (users.some(user => user.email === email)) {
+            errorMsg.innerText = "Email already registered";
+            return;
+        }
+        users.push({ name, email, mobile });
+        saveUsers(users);
+        errorMsg.innerText = "";
+        event.target.reset();
+        displayUsers();
+    }
+    function displayUsers() {
+        const users = getUsers();
+        const table = document.getElementById("userTable");
+        table.innerHTML = "";
+        users.forEach((user, index) => {
+            table.innerHTML += `
+                <tr>
+                    <td>${user.name}</td>
+                    <td>${user.email}</td>
+                    <td>${user.mobile}</td>
+                    <td>
+                        <button class="delete-btn" onclick="deleteUser(${index})">
+                            Delete
+                        </button>
+                    </td>
+                </tr>
+            `;
+        });
+    }
+    function deleteUser(index) {
+        let users = getUsers();
+        users.splice(index, 1);
+        saveUsers(users);
+        displayUsers();
+    }
+    function clearAllUsers() {
+        localStorage.removeItem("users");
+        displayUsers();
+    }
+    displayUsers();
+</script>
+</body>
+</html>

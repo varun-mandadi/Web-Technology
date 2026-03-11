@@ -1,0 +1,10 @@
+{
+  "products": [
+    { "name": "iPhone 15", "price": 79999, "category": "Mobile" },
+    { "name": "Samsung Galaxy S24", "price": 74999, "category": "Mobile" },
+    { "name": "Dell Inspiron Laptop", "price": 59999, "category": "Laptop" },
+    { "name": "HP Pavilion Laptop", "price": 62999, "category": "Laptop" },
+    { "name": "Sony Headphones", "price": 4999, "category": "Accessories" },
+    { "name": "Boat Smartwatch", "price": 2999, "category": "Wearable" }
+  ]
+}

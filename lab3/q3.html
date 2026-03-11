@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Dynamic Survey Builder</title>
+<style>
+*{
+    box-sizing: border-box;
+    font-family: "Segoe UI", Arial, sans-serif;
+}
+body{
+    margin: 0;
+    background: linear-gradient(135deg,#e0eafc,#cfdef3);
+    min-height: 100vh;
+}
+.navbar{
+    background: #2c3e50;
+    color: white;
+    padding: 15px 30px;
+    font-size: 22px;
+    font-weight: bold;
+}
+.container{
+    max-width: 900px;
+    margin: 30px auto;
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.25);
+}
+h2{
+    text-align: center;
+    margin-bottom: 30px;
+    color: #333;
+}
+.question{
+    margin-bottom: 30px;
+}
+.input-group{
+    position: relative;
+}
+.input-group input{
+    width: 100%;
+    padding: 12px 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 15px;
+    outline: none;
+}
+.input-group label{
+    position: absolute;
+    top: 50%;
+    left: 10px;
+    color: #777;
+    font-size: 14px;
+    background: white;
+    padding: 0 5px;
+    transform: translateY(-50%);
+    pointer-events: none;
+    transition: 0.3s;
+}
+.input-group input:focus + label,
+.input-group input:not(:placeholder-shown) + label{
+    top: -8px;
+    font-size: 12px;
+    color: #667eea;
+}
+.options{
+    margin-top: 8px;
+}
+.options label{
+    display: block;
+    margin-bottom: 6px;
+    font-weight: normal;
+}
+.error{
+    color: #e53935;
+    font-size: 13px;
+    margin-top: 5px;
+}
+.warning{
+    color: #ff9800;
+    font-size: 13px;
+    margin-top: 5px;
+}
+button{
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(135deg,#667eea,#764ba2);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+}
+button:hover{
+    opacity: 0.9;
+}
+.footer{
+    text-align: center;
+    margin-top: 25px;
+    color: #555;
+    font-size: 14px;
+}
+</style>
+</head>
+<body>
+<div class="navbar">📊 Survey Builder</div>
+<div class="container">
+<h2>Student Feedback Survey</h2>
+<form id="surveyForm"></form>
+<button onclick="submitSurvey()">Submit Survey</button>
+<p class="footer">Thank you for sharing your feedback!</p>
+</div>
+<script>
+const questions = [
+    {
+        id: "q1",
+        text: "Name",
+        type: "text",
+        required: true,
+        maxLength: 20
+    },
+    {
+        id: "q2",
+        text: "Registration Number",
+        type: "text",
+        required: true,
+        maxLength: 10
+    },
+    {
+        id:"q3",
+        text: "Email",
+        type: "text",
+        required: "true",
+        maxLength: 40
+    },
+    {
+        id: "q4",
+        text: "Select your gender",
+        type: "radio",
+        required: true,
+        options: ["Male", "Female", "Other"]
+    },
+    {
+        id: "q5",
+        text: "Which programming languages do you know?",
+        type: "checkbox",
+        required: true,
+        minSelect: 1,
+        maxSelect: 3,
+        options: ["C", "Java", "Python", "HTML", "CSS", "SQL", "JavaScript"]
+    }
+];
+const form = document.getElementById("surveyForm");
+questions.forEach(q => {
+    const div = document.createElement("div");
+    div.className = "question";
+    div.id = q.id;
+    let html = "";
+    if(q.type === "text"){
+        html += `
+        <div class="input-group">
+            <input type="text" placeholder=" " maxlength="${q.maxLength}">
+            <label>${q.text}${q.required ? " *" : ""}</label>
+        </div>
+        <div class="warning"></div>`;
+    }
+    if(q.type === "radio"){
+        html += `<label>${q.text}${q.required ? " *" : ""}</label><div class="options">`;
+        q.options.forEach(opt => {
+            html += `
+            <label>
+                <input type="radio" name="${q.id}" value="${opt}"> ${opt}
+            </label>`;
+        });
+        html += `</div>`;
+    }
+    if(q.type === "checkbox"){
+        html += `<label>${q.text}${q.required ? " *" : ""}</label><div class="options">`;
+        q.options.forEach(opt => {
+            html += `
+            <label>
+                <input type="checkbox" value="${opt}"> ${opt}
+            </label>`;
+        });
+        html += `</div>`;
+    }
+    html += `<div class="error"></div>`;
+    div.innerHTML = html;
+    form.appendChild(div);
+});
+document.querySelectorAll("input[type=text]").forEach(input => {
+    input.addEventListener("input", () => {
+        const max = input.maxLength;
+        const warning = input.closest(".question").querySelector(".warning");
+        if(input.value.length >= max){
+            warning.innerText = `Maximum ${max} characters reached`;
+        } else {
+            warning.innerText = "";
+        }
+    });
+});
+function submitSurvey(){
+    let valid = true;
+    questions.forEach(q => {
+        const container = document.getElementById(q.id);
+        const error = container.querySelector(".error");
+        error.innerText = "";
+        if(q.type === "text"){
+            const input = container.querySelector("input");
+            if(q.required && input.value.trim() === ""){
+                error.innerText = "This field is required.";
+                valid = false;
+            }
+        }
+        if(q.type === "radio"){
+            const checked = container.querySelector("input[type=radio]:checked");
+            if(q.required && !checked){
+                error.innerText = "Please select an option.";
+                valid = false;
+            }
+        }
+        if(q.type === "checkbox"){
+            const checked = container.querySelectorAll("input[type=checkbox]:checked").length;
+            if(q.required && checked < q.minSelect){
+                error.innerText = `Select at least ${q.minSelect} option(s).`;
+                valid = false;
+            }
+            else if(checked > q.maxSelect){
+                error.innerText = `Select at most ${q.maxSelect} options.`;
+                valid = false;
+            }
+        }
+    });
+    if(valid){
+        alert("Survey submitted successfully!");
+        form.reset();
+        document.querySelectorAll(".warning").forEach(w => w.innerText="");
+    }
+}
+</script>
+</body>
+</html>

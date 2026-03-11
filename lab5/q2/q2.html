@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Library Book Tracker</title>
+<style>
+body{
+    font-family: Arial, sans-serif;
+    background: linear-gradient(120deg,#89f7fe,#66a6ff);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+    margin:0;
+}
+.container{
+    width:90%;
+    max-width:900px;
+    background:#fff;
+    padding:25px;
+    border-radius:15px;
+    box-shadow:0 12px 30px rgba(0,0,0,0.2);
+}
+h2{
+    text-align:center;
+    color:#333;
+    margin-bottom:20px;
+}
+input,select,button{
+    padding:8px;
+    margin:5px;
+    border-radius:6px;
+    border:1px solid #ccc;
+}
+button{
+    background:#afa84c;
+    color:white;
+    cursor:pointer;
+}
+button:hover{
+    background:#388e8d;
+}
+table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:15px;
+}
+th,td{
+    padding:10px;
+    border:1px solid #ccc;
+    text-align:center;
+}
+th{
+    background:#1976d2;
+    color:white;
+}
+.message{
+    margin-top:10px;
+    font-weight:bold;
+    text-align:center;
+}
+.success{ color:green; }
+.error{ color:red; }
+</style>
+</head>
+<body>
+<div class="container">
+<h2>Library Book Tracker</h2>
+<input type="text" id="bid" placeholder="Book ID">
+<input type="text" id="btitle" placeholder="Title">
+<input type="text" id="bauthor" placeholder="Author">
+<select id="bstatus">
+<option value="">Status</option>
+<option>Available</option>
+<option>Issued</option>
+</select>
+<br>
+<button onclick="addBook()">Add</button>
+<button onclick="updateBook()">Update Status</button>
+<button onclick="deleteBook()">Delete</button>
+<div class="msg" id="msg"></div>
+<table>
+<thead>
+<tr>
+<th>ID</th><th>Title</th><th>Author</th><th>Status</th>
+</tr>
+</thead>
+<tbody id="bookTable"></tbody>
+</table>
+</div>
+<script>
+let xmlDoc;
+function loadBooks() {
+    const xhr = new XMLHttpRequest();
+    xhr.open("GET", "books.xml", true);
+    xhr.onload = () => {
+        xmlDoc = xhr.responseXML;
+        displayBooks();
+    };
+    xhr.send();
+}
+function displayBooks() {
+    const table = document.getElementById("bookTable");
+    table.innerHTML = "";
+    const books = xmlDoc.getElementsByTagName("book");
+    for (let book of books) {
+        table.innerHTML += `
+        <tr>
+            <td>${book.getElementsByTagName("id")[0].textContent}</td>
+            <td>${book.getElementsByTagName("title")[0].textContent}</td>
+            <td>${book.getElementsByTagName("author")[0].textContent}</td>
+            <td>${book.getElementsByTagName("status")[0].textContent}</td>
+        </tr>`;
+    }
+}
+function addBook() {
+    if (!bid.value || !btitle.value || !bauthor.value || !bstatus.value) {
+        msg.textContent = "All fields required";
+        return;
+    }
+    const book = xmlDoc.createElement("book");
+    ["id","title","author","status"].forEach((t,i)=>{
+        const el = xmlDoc.createElement(t);
+        el.textContent = [bid.value,btitle.value,bauthor.value,bstatus.value][i];
+        book.appendChild(el);
+    });
+    xmlDoc.documentElement.appendChild(book);
+    displayBooks();
+    msg.textContent = "Book added successfully";
+}
+function updateBook() {
+    const books = xmlDoc.getElementsByTagName("book");
+    for (let book of books) {
+        if (book.getElementsByTagName("id")[0].textContent === bid.value) {
+            book.getElementsByTagName("status")[0].textContent = bstatus.value;
+            displayBooks();
+            msg.textContent = "Status updated";
+            return;
+        }
+    }
+    msg.textContent = "Book not found";
+}
+function deleteBook() {
+    const books = xmlDoc.getElementsByTagName("book");
+    for (let book of books) {
+        if (book.getElementsByTagName("id")[0].textContent === bid.value) {
+            book.parentNode.removeChild(book);
+            displayBooks();
+            msg.textContent = "Book deleted";
+            return;
+        }
+    }
+    msg.textContent = "Book not found";
+}
+loadBooks();
+</script>
+</body>
+</html>
