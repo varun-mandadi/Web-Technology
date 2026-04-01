@@ -1,0 +1,22 @@
+body {
+  margin: 0;
+  font-family: Arial;
+  background: linear-gradient(135deg, #11998e, #38ef7d);
+}
+.app-container {
+  text-align: center;
+  padding: 30px;
+  color: white;
+}
+.student-card {
+  background: white;
+  color: black;
+  width: 300px;
+  margin: 15px auto;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+.student-card h3 {
+  margin: 5px 0;
+}
