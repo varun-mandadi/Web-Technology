@@ -1,0 +1,42 @@
+body {
+  margin: 0;
+  font-family: Arial;
+  background: linear-gradient(135deg, #36d1dc, #5b86e5);
+}
+.app-container {
+  text-align: center;
+  padding: 30px;
+  color: white;
+}
+input {
+  padding: 8px;
+  width: 60%;
+  border-radius: 6px;
+  border: none;
+}
+button {
+  padding: 8px 12px;
+  margin: 5px;
+  border-radius: 6px;
+  border: none;
+  background: #222;
+  color: white;
+  cursor: pointer;
+}
+.list-item {
+  background: white;
+  color: black;
+  margin: 10px auto;
+  padding: 10px;
+  width: 300px;
+  border-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+}
+.delete-btn {
+  background: red;
+  color: white;
+  border: none;
+  padding: 5px 8px;
+  cursor: pointer;
+}

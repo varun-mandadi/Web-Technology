@@ -1,0 +1,35 @@
+body {
+  margin: 0;
+  font-family: Arial;
+  background: linear-gradient(135deg, #ff7e5f, #feb47b);
+}
+.app-container {
+  text-align: center;
+  padding: 40px;
+  color: white;
+}
+.counter-card {
+  background: white;
+  color: black;
+  padding: 20px;
+  width: 300px;
+  margin: auto;
+  border-radius: 12px;
+}
+.counter-value {
+  font-size: 30px;
+  font-weight: bold;
+  margin: 15px;
+}
+button {
+  padding: 10px;
+  margin: 5px;
+  border-radius: 6px;
+  border: none;
+  background: #ff7e5f;
+  color: white;
+  cursor: pointer;
+}
+button:hover {
+  background: #e66a50;
+}
