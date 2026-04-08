@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>REST API</title>
+</head>
+<body>
+    <h1>User Management</h1>
+    <input type="text" id="name" placeholder="Enter name">
+    <button onclick="addUser()">Add User</button>
+    <button onclick="getUsers()">Get Users</button>
+    <pre id="output"></pre>
+    <script>
+        function addUser() {
+            const name = document.getElementById('name').value;
+            fetch('/users', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({name})
+            })
+            .then(res => res.text())
+            .then(data => alert(data));
+        }
+        function getUsers() {
+            fetch('/users')
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('output').innerText =
+                    JSON.stringify(data, null, 2);
+            });
+        }
+    </script>
+</body>
+</html>
